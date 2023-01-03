@@ -23,7 +23,8 @@ class CardSwiperScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               child: const FadeInImage(
                 placeholder: AssetImage('assets/no-image.jpg'),
-                image: NetworkImage('https://via.placeholder.com/300x400'),
+                image: NetworkImage(
+                    'https://images.nintendolife.com/b4fb0f19f7ab7/twilight-princess.large.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
