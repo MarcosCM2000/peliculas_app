@@ -12,7 +12,11 @@ class DetailsScreen extends StatelessWidget {
         ModalRoute.of(context)?.settings.arguments.toString() ?? 'no-movie';
     return Scaffold(
       body: CustomScrollView(
-        slivers: [_CustomAppBar()],
+        slivers: [
+          _CustomAppBar(),
+          SliverList(
+              delegate: SliverChildListDelegate([const _PosterAndTitle()]))
+        ],
       ),
     );
   }
@@ -47,6 +51,59 @@ class _CustomAppBar extends StatelessWidget {
           fit: BoxFit.cover,
         ),
       ),
+    );
+  }
+}
+
+class _PosterAndTitle extends StatelessWidget {
+  const _PosterAndTitle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Container(
+      margin: const EdgeInsets.only(top: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: const FadeInImage(
+            width: 200,
+            height: 300,
+            placeholder: AssetImage('assets/no-image.jpg'),
+            image: NetworkImage(
+                'https://images.nintendolife.com/b4fb0f19f7ab7/twilight-princess.large.jpg'),
+          ),
+        ),
+        const SizedBox(width: 20),
+        Column(
+          children: [
+            Text(
+              'Movie.title',
+              style: textTheme.headline5,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+            Text(
+              'Movie.OriginalTitle',
+              style: textTheme.subtitle1,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            Row(
+              children: [
+                Icon(
+                  Icons.star_outline,
+                  size: 25,
+                  color: Colors.grey,
+                ),
+                SizedBox(width: 5),
+                Text('Movie.VoteAverage', style: textTheme.caption)
+              ],
+            )
+          ],
+        )
+      ]),
     );
   }
 }
