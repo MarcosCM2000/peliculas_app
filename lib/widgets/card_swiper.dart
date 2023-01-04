@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:peliculas_app/models/models.dart';
 
 class CardSwiperScreen extends StatelessWidget {
-  const CardSwiperScreen({Key? key}) : super(key: key);
+  const CardSwiperScreen({Key? key, required this.movies}) : super(key: key);
+
+  final List<Movie> movies;
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +14,7 @@ class CardSwiperScreen extends StatelessWidget {
       width: double.infinity,
       height: size.height * 0.5,
       child: Swiper(
-        itemCount: 10,
+        itemCount: movies.length,
         layout: SwiperLayout.STACK,
         itemWidth: size.width * 0.6,
         itemHeight: size.height * 0.45,
@@ -21,10 +24,9 @@ class CardSwiperScreen extends StatelessWidget {
                 arguments: 'movie-instance'),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: const FadeInImage(
-                placeholder: AssetImage('assets/no-image.jpg'),
-                image: NetworkImage(
-                    'https://images.nintendolife.com/b4fb0f19f7ab7/twilight-princess.large.jpg'),
+              child: FadeInImage(
+                placeholder: const AssetImage('assets/no-image.jpg'),
+                image: NetworkImage(movies[index].fullPosterImg),
                 fit: BoxFit.cover,
               ),
             ),

@@ -4,15 +4,16 @@ import 'package:http/http.dart' as http;
 import 'package:peliculas_app/models/models.dart';
 
 class MoviesProvider extends ChangeNotifier {
-  String _apiKey = '9af3e37b201df44fd5a2f978075cf0b6';
-  String _baseUrl = 'api.themoviedb.org';
-  String _language = 'es-ES';
-  int _page = 1;
+  final _apiKey = '9af3e37b201df44fd5a2f978075cf0b6';
+  final _baseUrl = 'api.themoviedb.org';
+  final _language = 'es-ES';
 
   MoviesProvider() {
     print('MoviesProvider inicializado');
     getOnDisplayMovies();
   }
+
+  List<Movie> onDisplayMovies = [];
 
   getOnDisplayMovies() async {
     var url = Uri.https(_baseUrl, '3/movie/now_playing',
@@ -22,7 +23,7 @@ class MoviesProvider extends ChangeNotifier {
     final response = await http.get(url);
     final nowPlayingResponse = NowPlayingResponse.fromJson(response.body);
     //  final Map<String, dynamic> decodedData = json.decode(response.body);
-
-    print(nowPlayingResponse.results[1].title);
+    onDisplayMovies = nowPlayingResponse.results;
+    notifyListeners();
   }
 }
