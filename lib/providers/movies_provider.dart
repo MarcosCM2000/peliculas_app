@@ -16,31 +16,29 @@ class MoviesProvider extends ChangeNotifier {
 
   List<Movie> onDisplayMovies = [];
   List<Movie> popularMovies = [];
-  Map<String, String> queryParams = {
-    'api_key': '',
-    'language': '',
-    'page': '',
-  };
+  int _popularPage = 0;
 
-  getOnDisplayMovies() async {
-    final url = Uri.https(_baseUrl, '3/movie/now_playing',
-        {'api_key': _apiKey, 'language': _language, 'page': '1'});
+  Future<String> _getJsonData(String endpoint, [int page = 1]) async {
+    final url = Uri.https(_baseUrl, endpoint,
+        {'api_key': _apiKey, 'language': _language, 'page': '$page'});
 
     // Await the http get response, then decode the json-formatted response.
     final response = await http.get(url);
-    final nowPlayingResponse = NowPlayingResponse.fromJson(response.body);
+    return response.body;
+  }
+
+  getOnDisplayMovies() async {
+    final nowPlayingResponse =
+        NowPlayingResponse.fromJson(await _getJsonData('3/movie/now_playing'));
     //  final Map<String, dynamic> decodedData = json.decode(response.body);
     onDisplayMovies = nowPlayingResponse.results;
     notifyListeners();
   }
 
   getPopularMovies() async {
-    final url = Uri.https(_baseUrl, '3/movie/popular',
-        {'api_key': _apiKey, 'language': _language, 'page': '1'});
-
-    // Await the http get response, then decode the json-formatted response.
-    final response = await http.get(url);
-    final popularResponse = PopularResponse.fromJson(response.body);
+    _popularPage++;
+    final popularResponse = PopularResponse.fromJson(
+        await _getJsonData('3/movie/popular', _popularPage));
     //  final Map<String, dynamic> decodedData = json.decode(response.body);
     popularMovies = [...popularMovies, ...popularResponse.results];
     notifyListeners();
