@@ -11,12 +11,19 @@ class MoviesProvider extends ChangeNotifier {
   MoviesProvider() {
     print('MoviesProvider inicializado');
     getOnDisplayMovies();
+    getPopularMovies();
   }
 
   List<Movie> onDisplayMovies = [];
+  List<Movie> popularMovies = [];
+  Map<String, String> queryParams = {
+    'api_key': '',
+    'language': '',
+    'page': '',
+  };
 
   getOnDisplayMovies() async {
-    var url = Uri.https(_baseUrl, '3/movie/now_playing',
+    final url = Uri.https(_baseUrl, '3/movie/now_playing',
         {'api_key': _apiKey, 'language': _language, 'page': '1'});
 
     // Await the http get response, then decode the json-formatted response.
@@ -24,6 +31,18 @@ class MoviesProvider extends ChangeNotifier {
     final nowPlayingResponse = NowPlayingResponse.fromJson(response.body);
     //  final Map<String, dynamic> decodedData = json.decode(response.body);
     onDisplayMovies = nowPlayingResponse.results;
+    notifyListeners();
+  }
+
+  getPopularMovies() async {
+    final url = Uri.https(_baseUrl, '3/movie/popular',
+        {'api_key': _apiKey, 'language': _language, 'page': '1'});
+
+    // Await the http get response, then decode the json-formatted response.
+    final response = await http.get(url);
+    final popularResponse = PopularResponse.fromJson(response.body);
+    //  final Map<String, dynamic> decodedData = json.decode(response.body);
+    popularMovies = [...popularMovies, ...popularResponse.results];
     notifyListeners();
   }
 }
