@@ -18,6 +18,8 @@ class MoviesProvider extends ChangeNotifier {
   List<Movie> popularMovies = [];
   int _popularPage = 0;
 
+  Map<int, List<Cast>> moviesCast = {};
+
   Future<String> _getJsonData(String endpoint, [int page = 1]) async {
     final url = Uri.https(_baseUrl, endpoint,
         {'api_key': _apiKey, 'language': _language, 'page': '$page'});
@@ -42,5 +44,16 @@ class MoviesProvider extends ChangeNotifier {
     //  final Map<String, dynamic> decodedData = json.decode(response.body);
     popularMovies = [...popularMovies, ...popularResponse.results];
     notifyListeners();
+  }
+
+  Future<List<Cast>> getMovieCast(int id) async {
+    //  Revisar que ID exista en mapa
+    if (moviesCast.containsKey(id)) return moviesCast[id]!;
+
+    final jsonData = await _getJsonData('3/movie/$id/credits');
+    final creditsResponse = CreditsResponse.fromJson(jsonData);
+
+    moviesCast[id] = creditsResponse.cast;
+    return creditsResponse.cast;
   }
 }
