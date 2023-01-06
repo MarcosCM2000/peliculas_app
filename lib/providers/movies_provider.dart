@@ -1,12 +1,21 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:peliculas_app/helpers/debouncer.dart';
 import 'package:peliculas_app/models/models.dart';
 
 class MoviesProvider extends ChangeNotifier {
   final _apiKey = '9af3e37b201df44fd5a2f978075cf0b6';
   final _baseUrl = 'api.themoviedb.org';
   final _language = 'es-ES';
+
+  final debouncer = Debouncer(duration: const Duration(milliseconds: 500));
+
+  final StreamController<List<Movie>> _suggestionsStreamController =
+      StreamController.broadcast();
+  Stream<List<Movie>> get suggestionStream =>
+      _suggestionsStreamController.stream;
 
   MoviesProvider() {
     print('MoviesProvider inicializado');
@@ -63,5 +72,17 @@ class MoviesProvider extends ChangeNotifier {
     final response = await http.get(url);
     final searchResopnse = SearchResponse.fromJson(response.body);
     return searchResopnse.results;
+  }
+
+  void getSuggestionsByQuery(String searchTeam) {
+    debouncer.value = '';
+    debouncer.onValue = (value) async {
+      final results = await searchMovie(value);
+      _suggestionsStreamController.add(results);
+    };
+    final timer = Timer.periodic(const Duration(milliseconds: 300), (_) {
+      debouncer.value = searchTeam;
+    });
+    Future.delayed(Duration(milliseconds: 301)).then((_) => timer.cancel());
   }
 }
